@@ -70,7 +70,7 @@ export async function GET() {
     });
 
     const alerts = [
-      ...expiredCertificates.map((cert) => {
+      ...expiredCertificates.map((cert: typeof expiredCertificates[number]) => {
         const daysExpired = Math.ceil(
           (now.getTime() - new Date(cert.expiryDate).getTime()) /
             (1000 * 60 * 60 * 24)
@@ -81,7 +81,7 @@ export async function GET() {
           severity: "critical",
         };
       }),
-      ...criticalCertificates.map((cert) => {
+      ...criticalCertificates.map((cert: typeof criticalCertificates[number]) => {
         const daysUntilExpiry = Math.ceil(
           (new Date(cert.expiryDate).getTime() - now.getTime()) /
             (1000 * 60 * 60 * 24)
