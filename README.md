@@ -1,6 +1,6 @@
 # Maritime Crew Management System
 
-A comprehensive crew and certificate management system for maritime operations built with Next.js 14, TypeScript, Prisma, and Supabase.
+A comprehensive crew and certificate management system for maritime operations built with Next.js 14, TypeScript, Prisma, and Neon PostgreSQL.
 
 ## Tech Stack
 
@@ -8,7 +8,7 @@ A comprehensive crew and certificate management system for maritime operations b
 - **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
-- **Database**: PostgreSQL (via Supabase)
+- **Database**: PostgreSQL (via Neon)
 - **ORM**: Prisma
 - **State Management**: React Query (TanStack Query)
 - **Package Manager**: pnpm
@@ -34,7 +34,7 @@ maritime-crew-system/
 
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
-- PostgreSQL database (Supabase recommended)
+- PostgreSQL database (Neon recommended)
 
 ### Installation
 
@@ -49,7 +49,7 @@ maritime-crew-system/
    cp .env.example .env.local
    ```
 
-4. Update `.env.local` with your database and Supabase credentials
+4. Update `.env.local` with your Neon database connection string
 
 5. Generate Prisma Client:
    ```bash

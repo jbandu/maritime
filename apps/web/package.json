@@ -16,8 +16,6 @@
     "@tanstack/react-query": "^5.17.0",
     "@maritime-crew-system/database": "workspace:*",
     "@prisma/client": "^5.7.1",
-    "@supabase/supabase-js": "^2.39.0",
-    "@supabase/ssr": "^0.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "tailwind-merge": "^2.2.0",
