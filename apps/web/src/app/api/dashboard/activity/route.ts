@@ -27,7 +27,7 @@ export async function GET() {
       },
     });
 
-    const activity = recentCertificates.map((cert) => ({
+    const activity = recentCertificates.map((cert: typeof recentCertificates[0]) => ({
       title: `Certificate added for ${cert.crew.firstName} ${cert.crew.lastName}`,
       description: `${cert.certificateType.name} (${cert.certificateNumber})`,
       timestamp: format(new Date(cert.createdAt), "MMM dd, yyyy HH:mm"),
