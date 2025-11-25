@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth/session";
 
-// POST /api/certificates/upload - Handle file upload to Supabase Storage
+// POST /api/certificates/upload - Handle file upload
 export async function POST(request: NextRequest) {
   try {
     await requireAuth();
@@ -48,11 +48,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Upload to Supabase Storage
+    // TODO: Implement file storage solution
     // For now, return a placeholder URL
     // In production, you would:
-    // 1. Create a Supabase Storage client
-    // 2. Upload the file to a bucket (e.g., "certificates")
+    // 1. Upload the file to a storage service (e.g., AWS S3, Cloudflare R2, or local storage)
+    // 2. Store the file path/URL in the database
     // 3. Return the public URL
 
     const filename = `${Date.now()}-${file.name}`;
