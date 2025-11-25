@@ -1,0 +1,180 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum CrewStatus {
+  active
+  inactive
+  on_leave
+  terminated
+}
+
+enum CertificateStatus {
+  valid
+  expiring_soon
+  expired
+  revoked
+}
+
+enum ContractStatus {
+  active
+  completed
+  terminated
+  pending
+}
+
+enum VesselStatus {
+  operational
+  maintenance
+  laid_up
+  decommissioned
+}
+
+enum Rank {
+  master
+  chief_engineer
+  chief_officer
+  second_officer
+  third_officer
+  chief_mate
+  second_mate
+  third_mate
+  able_seaman
+  ordinary_seaman
+  oiler
+  wiper
+  cook
+  steward
+  cadet
+}
+
+enum VerificationStatus {
+  pending
+  verified
+  rejected
+}
+
+// Models
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model CrewMaster {
+  id           String     @id @default(cuid())
+  employeeId   String     @unique
+  firstName    String
+  lastName     String
+  dateOfBirth  DateTime
+  nationality  String
+  email        String?    @unique
+  phone        String?
+  status       CrewStatus @default(active)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  certificates CrewCertificate[]
+  contracts    CrewContract[]
+
+  @@index([status])
+  @@index([employeeId])
+  @@map("crew_masters")
+}
+
+model CertificateType {
+  id                  String   @id @default(cuid())
+  code                String   @unique
+  name                String
+  category            String
+  validityPeriodMonths Int?
+  mandatory           Boolean  @default(false)
+  description         String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  certificates        CrewCertificate[]
+
+  @@index([category])
+  @@index([mandatory])
+  @@map("certificate_types")
+}
+
+model CrewCertificate {
+  id                 String            @id @default(cuid())
+  crewId             String
+  certificateTypeId  String
+  certificateNumber  String
+  issueDate          DateTime
+  expiryDate         DateTime
+  documentUrl        String?
+  verificationStatus VerificationStatus @default(pending)
+  status             CertificateStatus @default(valid)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  crew               CrewMaster        @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  certificateType    CertificateType   @relation(fields: [certificateTypeId], references: [id], onDelete: Restrict)
+
+  @@index([crewId])
+  @@index([certificateTypeId])
+  @@index([expiryDate])
+  @@index([status])
+  @@index([verificationStatus])
+  @@unique([crewId, certificateTypeId, certificateNumber])
+  @@map("crew_certificates")
+}
+
+model Vessel {
+  id               String       @id @default(cuid())
+  imoNumber        String       @unique
+  vesselName       String
+  vesselType       String
+  flagState        String
+  grossTonnage     Float?
+  operationalStatus VesselStatus @default(operational)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  contracts        CrewContract[]
+
+  @@index([imoNumber])
+  @@index([operationalStatus])
+  @@map("vessels")
+}
+
+model CrewContract {
+  id            String        @id @default(cuid())
+  crewId        String
+  vesselId      String
+  rank          Rank
+  signOnDate    DateTime
+  contractEndDate DateTime
+  status        ContractStatus @default(active)
+  basicWage     Float?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  crew          CrewMaster    @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  vessel        Vessel        @relation(fields: [vesselId], references: [id], onDelete: Restrict)
+
+  @@index([crewId])
+  @@index([vesselId])
+  @@index([status])
+  @@index([contractEndDate])
+  @@map("crew_contracts")
+}
