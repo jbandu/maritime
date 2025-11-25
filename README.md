@@ -95,6 +95,63 @@ The application uses a maritime blue color scheme:
 - **Primary**: #1E3A8A (Maritime Blue)
 - **Secondary**: #0D9488 (Teal)
 
+## Railway Deployment
+
+This project is configured for deployment on Railway. Follow these steps:
+
+### Prerequisites
+
+1. A Railway account ([railway.app](https://railway.app))
+2. A PostgreSQL database (Railway PostgreSQL service or external like Neon)
+
+### Deployment Steps
+
+1. **Create a new Railway project** and connect your repository
+
+2. **Add a PostgreSQL service** (or use an external database):
+   - If using Railway PostgreSQL, the `DATABASE_URL` will be automatically set
+   - If using external database (e.g., Neon), add `DATABASE_URL` as an environment variable
+
+3. **Set environment variables** in Railway:
+   - `DATABASE_URL` - PostgreSQL connection string (auto-set if using Railway PostgreSQL)
+   - `NEXTAUTH_SECRET` - Generate with: `openssl rand -base64 32`
+   - `NEXTAUTH_URL` - Your Railway app URL (e.g., `https://your-app-name.up.railway.app`)
+   - `PORT` - Automatically set by Railway (no need to configure)
+
+4. **Configure the service**:
+   - Root directory: `/` (default)
+   - Build command: `pnpm install && pnpm build` (configured in `railway.json`)
+   - Start command: `cd apps/web && pnpm start` (configured in `railway.json`)
+
+5. **Run database migrations** (one-time setup):
+   - After first deployment, run migrations via Railway CLI or add a one-time script:
+     ```bash
+     railway run pnpm --filter @maritime-crew-system/database db:push
+     ```
+   - Or use Railway's console to run:
+     ```bash
+     cd packages/database && pnpm db:push
+     ```
+
+6. **Seed the database** (optional):
+   ```bash
+   railway run pnpm --filter @maritime-crew-system/database db:seed
+   ```
+
+### Important Notes
+
+- Prisma Client is automatically generated during `pnpm install` via the `postinstall` script
+- The build process ensures all workspace dependencies are built in the correct order
+- Next.js is configured with `output: 'standalone'` for optimal Railway deployment
+- Railway automatically handles the `PORT` environment variable
+
+### Troubleshooting
+
+- **Build fails**: Ensure `DATABASE_URL` is set correctly
+- **Prisma errors**: Verify Prisma Client was generated (check build logs)
+- **App won't start**: Check that `NEXTAUTH_SECRET` and `NEXTAUTH_URL` are set
+- **Database connection errors**: Verify `DATABASE_URL` format and SSL settings
+
 ## License
 
 Private - All rights reserved

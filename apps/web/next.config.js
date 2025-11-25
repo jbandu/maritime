@@ -2,6 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ["@maritime-crew-system/ui", "@maritime-crew-system/database"],
+  // Railway deployment configuration
+  output: 'standalone',
 };
 
 module.exports = nextConfig;
