@@ -63,6 +63,46 @@ enum VerificationStatus {
   rejected
 }
 
+enum TravelType {
+  sign_on
+  sign_off
+  training
+  medical
+  emergency
+  leave
+}
+
+enum TravelStatus {
+  planned
+  booked
+  in_transit
+  completed
+  cancelled
+}
+
+enum PerformanceRating {
+  excellent
+  good
+  satisfactory
+  needs_improvement
+  unsatisfactory
+}
+
+enum ComplianceStatus {
+  compliant
+  violation
+  warning
+  critical
+}
+
+enum TrainingStatus {
+  scheduled
+  in_progress
+  completed
+  failed
+  cancelled
+}
+
 // Models
 model User {
   id        String   @id @default(cuid())
@@ -96,6 +136,7 @@ model CrewMaster {
 
   @@index([status])
   @@index([employeeId])
+  @@index([nationality])
   @@map("crew_masters")
 }
 
@@ -170,6 +211,7 @@ model CrewContract {
   vesselId      String
   rank          Rank
   signOnDate    DateTime
+  signOffDate   DateTime?
   contractEndDate DateTime
   status        ContractStatus @default(active)
   basicWage     Float?
@@ -187,6 +229,7 @@ model CrewContract {
   @@index([vesselId])
   @@index([status])
   @@index([contractEndDate])
+  @@index([signOnDate])
   @@map("crew_contracts")
 }
 
