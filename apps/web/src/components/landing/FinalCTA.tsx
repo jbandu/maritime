@@ -2,11 +2,21 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
 export function FinalCTA() {
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const handleLoginClick = () => {
+    if (session) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
+    }
+  };
 
   return (
     <section className="py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900">
@@ -35,10 +45,10 @@ export function FinalCTA() {
           >
             <Button
               size="lg"
-              onClick={() => router.push("/login")}
+              onClick={handleLoginClick}
               className="bg-white text-blue-900 hover:bg-blue-50 text-xl px-12 py-8 h-auto animate-glow"
             >
-              Login to Your Dashboard →
+              {session ? "Go to Your Dashboard →" : "Login to Your Dashboard →"}
             </Button>
           </motion.div>
 

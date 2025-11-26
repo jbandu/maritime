@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Ship, Menu, X } from "lucide-react";
 import Link from "next/link";
@@ -11,6 +12,15 @@ export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const handleLoginClick = () => {
+    if (session) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,10 +74,10 @@ export function Navigation() {
               </Link>
             ))}
             <Button
-              onClick={() => router.push("/login")}
+              onClick={handleLoginClick}
               className="bg-cyan-500 hover:bg-cyan-400 text-white px-6 animate-glow"
             >
-              Login
+              {session ? "Dashboard" : "Login"}
             </Button>
           </div>
 
@@ -108,12 +118,12 @@ export function Navigation() {
               ))}
               <Button
                 onClick={() => {
-                  router.push("/login");
+                  handleLoginClick();
                   setIsMobileMenuOpen(false);
                 }}
                 className="w-full bg-cyan-500 hover:bg-cyan-400 text-white"
               >
-                Login
+                {session ? "Dashboard" : "Login"}
               </Button>
             </div>
           </motion.div>

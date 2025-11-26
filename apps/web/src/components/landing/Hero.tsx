@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { AnimatedBackground } from "./AnimatedBackground";
 import { AnimatedCounter } from "./AnimatedCounter";
@@ -17,7 +19,33 @@ import {
 
 export function Hero() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [demoOpen, setDemoOpen] = useState(false);
+
+  // Fetch real stats from API
+  const { data: statsData } = useQuery({
+    queryKey: ["landing-stats"],
+    queryFn: async () => {
+      const res = await fetch("/api/landing/stats");
+      const data = await res.json();
+      return data.data;
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  const stats = statsData || {
+    seafarers: 10000,
+    certificates: 4247,
+    complianceRate: 100,
+  };
+
+  const handleLoginClick = () => {
+    if (session) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
+    }
+  };
 
   return (
     <>
@@ -70,15 +98,15 @@ export function Hero() {
             >
               <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 border border-white/20">
                 <div className="text-3xl font-bold text-white mb-2">
-                  <AnimatedCounter value={10000} suffix="+" />
+                  <AnimatedCounter value={stats.seafarers} suffix="+" />
                 </div>
                 <div className="text-blue-200">Seafarers Trust Us</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 border border-white/20">
                 <div className="text-3xl font-bold text-white mb-2">
-                  <AnimatedCounter value={0} />
+                  <AnimatedCounter value={stats.complianceRate} suffix="%" />
                 </div>
-                <div className="text-blue-200">Certificate Violations</div>
+                <div className="text-blue-200">MLC Compliance Rate</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 border border-white/20">
                 <div className="text-3xl font-bold text-white mb-2">
@@ -98,9 +126,9 @@ export function Hero() {
               <Button
                 size="lg"
                 className="bg-white text-blue-900 hover:bg-blue-50 text-lg px-8 py-6 h-auto animate-glow"
-                onClick={() => router.push("/login")}
+                onClick={handleLoginClick}
               >
-                Login to Dashboard →
+                {session ? "Go to Dashboard →" : "Login to Dashboard →"}
               </Button>
               <Button
                 size="lg"

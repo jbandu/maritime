@@ -55,6 +55,41 @@ export function AIAgentDemoModal({
       await new Promise((resolve) => setTimeout(resolve, 500));
       await streamMessage("📊 Analyzing crew pool (400+ candidates)...");
       await new Promise((resolve) => setTimeout(resolve, 800));
+      
+      // Try to call real API (will fail if not logged in, which is fine for demo)
+      let candidates = [
+        { id: 1, name: "John Smith", score: 95, rank: "Chief Engineer" },
+        { id: 2, name: "Maria Garcia", score: 92, rank: "Chief Engineer" },
+        { id: 3, name: "Ahmed Hassan", score: 90, rank: "Chief Engineer" },
+      ];
+
+      try {
+        const response = await fetch("/api/agents/crew-match", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            vessel_id: "demo-vessel",
+            rank: "Chief Engineer",
+            required_date: new Date().toISOString(),
+            port: "Singapore",
+            requirements: {
+              certificates: ["STCW", "GMDSS"],
+              experience_years: 5,
+              vessel_type: "Container",
+            },
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data?.candidates) {
+            candidates = data.data.candidates;
+          }
+        }
+      } catch (error) {
+        // Use demo data if API call fails (expected for non-logged-in users)
+      }
+
       await streamMessage("✅ Found 23 qualified Chief Engineers");
       await new Promise((resolve) => setTimeout(resolve, 500));
       await streamMessage("🔍 Checking certificates... 18 valid");
@@ -65,14 +100,8 @@ export function AIAgentDemoModal({
       await streamMessage("   Performance History: 25%");
       await streamMessage("   Cost Efficiency: 20%");
       await new Promise((resolve) => setTimeout(resolve, 500));
-      await streamMessage("🎯 Top 5 candidates identified");
-      setResults({
-        candidates: [
-          { id: 1, name: "John Smith", score: 95, rank: "Chief Engineer" },
-          { id: 2, name: "Maria Garcia", score: 92, rank: "Chief Engineer" },
-          { id: 3, name: "Ahmed Hassan", score: 90, rank: "Chief Engineer" },
-        ],
-      });
+      await streamMessage("🎯 Top candidates identified");
+      setResults({ candidates });
     } else if (agent === "cert-guardian") {
       await streamMessage("🤖 CertGuardianAI scanning...");
       await new Promise((resolve) => setTimeout(resolve, 500));
