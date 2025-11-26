@@ -116,33 +116,23 @@ model User {
 }
 
 model CrewMaster {
-  id                String     @id @default(cuid())
-  employeeId        String     @unique
-  firstName         String
-  lastName          String
-  dateOfBirth       DateTime
-  placeOfBirth      String?
-  nationality       String
-  passportNumber    String?
-  passportExpiry    DateTime?
-  email             String?    @unique
-  phone             String?
-  emergencyContact  String?
-  emergencyPhone    String?
-  bloodGroup        String?
-  allergies         String?
-  status            CrewStatus @default(active)
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  id           String     @id @default(cuid())
+  employeeId   String     @unique
+  firstName    String
+  lastName     String
+  dateOfBirth  DateTime
+  nationality  String
+  email        String?    @unique
+  phone        String?
+  status       CrewStatus @default(active)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  certificates      CrewCertificate[]
-  contracts         CrewContract[]
-  workRestHours     WorkRestHours[]
-  schedules         CrewScheduling[]
-  travel            CrewTravel[]
-  performance       CrewPerformance[]
-  training          TrainingRecord[]
-  payroll           CrewPayroll[]
+  certificates CrewCertificate[]
+  contracts    CrewContract[]
+  assignments  CrewAssignment[]
+  renewalPlans CertificateRenewalPlan[]
+  travel       CrewTravel[]
 
   @@index([status])
   @@index([employeeId])
@@ -183,6 +173,7 @@ model CrewCertificate {
 
   crew               CrewMaster        @relation(fields: [crewId], references: [id], onDelete: Cascade)
   certificateType    CertificateType   @relation(fields: [certificateTypeId], references: [id], onDelete: Restrict)
+  renewalPlans       CertificateRenewalPlan[]
 
   @@index([crewId])
   @@index([certificateTypeId])
@@ -205,7 +196,9 @@ model Vessel {
   updatedAt        DateTime     @updatedAt
 
   contracts        CrewContract[]
-  schedules        CrewScheduling[]
+  assignments      CrewAssignment[]
+  rotationPlans     RotationPlan[]
+  emergencies      EmergencyReplacement[]
 
   @@index([imoNumber])
   @@index([operationalStatus])
@@ -222,16 +215,15 @@ model CrewContract {
   contractEndDate DateTime
   status        ContractStatus @default(active)
   basicWage     Float?
-  wageCurrency  String?       @default("USD")
   signOnPort    String?
   signOffPort   String?
-  signOffReason String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   crew          CrewMaster    @relation(fields: [crewId], references: [id], onDelete: Cascade)
   vessel        Vessel        @relation(fields: [vesselId], references: [id], onDelete: Restrict)
-  performance   CrewPerformance[]
+  restHours     RestHourRecord[]
+  travelBookings CrewTravel[]
 
   @@index([crewId])
   @@index([vesselId])
@@ -241,170 +233,227 @@ model CrewContract {
   @@map("crew_contracts")
 }
 
-model WorkRestHours {
-  id              String          @id @default(cuid())
-  crewId          String
-  vesselId        String
-  recordDate      DateTime
-  workHours       Float           // Hours worked in 24-hour period
-  restHours       Float           // Hours rested in 24-hour period
-  overtimeHours   Float?          @default(0)
-  complianceStatus ComplianceStatus @default(compliant)
-  violationType   String?         // MLC violation type if any
-  notes           String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+// Agent Workflow Models
+enum AgentType {
+  crew_match
+  rotation_planner
+  fatigue_guardian
+  cert_guardian
+  travel_coordinator
+  emergency_crew
+}
 
-  crew            CrewMaster      @relation(fields: [crewId], references: [id], onDelete: Cascade)
+enum AgentMessageType {
+  request_assignment
+  response_assignment
+  alert
+  notification
+  status_update
+}
+
+enum AgentMessagePriority {
+  low
+  medium
+  high
+  critical
+}
+
+model AgentMessage {
+  id              String            @id @default(cuid())
+  agentId         String
+  agentType       AgentType
+  messageType     AgentMessageType
+  priority        AgentMessagePriority @default(medium)
+  payload         Json
+  requestingAgent String?
+  status          String            @default("pending")
+  response        Json?
+  createdAt       DateTime          @default(now())
+  processedAt     DateTime?
+  error           String?
+
+  @@index([agentId])
+  @@index([agentType])
+  @@index([messageType])
+  @@index([priority])
+  @@index([status])
+  @@index([createdAt])
+  @@map("agent_messages")
+}
+
+model CrewAssignment {
+  id                  String   @id @default(cuid())
+  crewId              String
+  vesselId             String
+  rank                Rank
+  requiredDate        DateTime
+  port                String
+  assignmentScore     Float?
+  technicalScore      Float?
+  performanceScore    Float?
+  costScore           Float?
+  preferenceScore     Float?
+  continuityScore     Float?
+  riskAssessment      Json?
+  status              String   @default("pending")
+  assignedBy          String?  // agent_id
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  crew                CrewMaster @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  vessel              Vessel      @relation(fields: [vesselId], references: [id], onDelete: Restrict)
 
   @@index([crewId])
   @@index([vesselId])
+  @@index([status])
+  @@index([requiredDate])
+  @@map("crew_assignments")
+}
+
+model RotationPlan {
+  id                  String   @id @default(cuid())
+  vesselId             String
+  planningPeriodStart  DateTime
+  planningPeriodEnd    DateTime
+  planData             Json     // Contains rotation schedule
+  costProjection       Float?
+  confidenceLevel      Float?
+  riskAssessment       Json?
+  status               String   @default("draft")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  vessel               Vessel   @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+
+  @@index([vesselId])
+  @@index([planningPeriodStart])
+  @@index([status])
+  @@map("rotation_plans")
+}
+
+// Rest Hour Compliance Models
+model RestHourRecord {
+  id              String   @id @default(cuid())
+  contractId      String
+  crewId          String
+  recordDate      DateTime
+  workHours       Float
+  restHours       Float
+  restPeriods     Json     // Array of rest periods
+  complianceStatus String  @default("compliant") // compliant, violation_minimum, violation_split, violation_weekly
+  violationType   String?
+  fatigueRiskScore Float?
+  masterApproved  Boolean  @default(false)
+  masterSignature String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  contract        CrewContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+  @@index([crewId])
   @@index([recordDate])
   @@index([complianceStatus])
-  @@unique([crewId, vesselId, recordDate])
-  @@map("work_rest_hours")
+  @@map("rest_hour_records")
 }
 
-model CrewScheduling {
-  id                String        @id @default(cuid())
-  vesselId          String
-  rank              Rank
-  assignedCrewId    String?
-  assignmentStart   DateTime
-  assignmentEnd     DateTime
-  crewChangePort    String?
-  status            String        @default("planned") // planned, confirmed, active, completed, cancelled
-  travelItinerary   String?       // JSON string with travel details
-  estimatedCost     Float?
-  actualCost        Float?
-  notes             String?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+model WeeklyRestSummary {
+  id              String   @id @default(cuid())
+  contractId      String
+  crewId          String
+  weekStartDate   DateTime
+  totalRestHours  Float
+  complianceStatus String
+  shortfallHours  Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  vessel            Vessel        @relation(fields: [vesselId], references: [id], onDelete: Restrict)
-  crew              CrewMaster?   @relation(fields: [assignedCrewId], references: [id], onDelete: SetNull)
+  @@index([contractId])
+  @@index([crewId])
+  @@index([weekStartDate])
+  @@map("weekly_rest_summaries")
+}
 
-  @@index([vesselId])
-  @@index([assignedCrewId])
-  @@index([rank])
-  @@index([assignmentStart])
+// Certificate Renewal Planning
+model CertificateRenewalPlan {
+  id                  String   @id @default(cuid())
+  certificateId       String
+  crewId              String
+  renewalDate         DateTime
+  trainingCenter      String?
+  trainingLocation    String?
+  estimatedCost       Float?
+  travelCost          Float?
+  status              String   @default("planned")
+  bookedAt            DateTime?
+  completedAt         DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  certificate         CrewCertificate @relation(fields: [certificateId], references: [id], onDelete: Cascade)
+  crew                CrewMaster      @relation(fields: [crewId], references: [id], onDelete: Cascade)
+
+  @@index([certificateId])
+  @@index([crewId])
+  @@index([renewalDate])
   @@index([status])
-  @@map("crew_scheduling")
+  @@map("certificate_renewal_plans")
 }
 
+// Travel Coordination Models
 model CrewTravel {
-  id                String        @id @default(cuid())
-  crewId            String
-  travelType        TravelType
-  departureLocation String
-  departureDate     DateTime
-  arrivalLocation   String
-  arrivalDate       DateTime
-  flightNumber      String?
-  flightDetails     String?       // JSON string with flight info
-  hotelDetails      String?       // JSON string with hotel info
-  visaRequired      Boolean       @default(false)
-  visaStatus        String?       // pending, approved, denied
-  portAgent         String?
-  costs             Float?
-  status            TravelStatus  @default(planned)
-  notes             String?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  id                  String   @id @default(cuid())
+  contractId          String?
+  crewId              String
+  travelType          String   // sign_on, sign_off, emergency, training
+  origin              String
+  destination         String
+  departureDate       DateTime
+  arrivalDate         DateTime?
+  flightDetails       Json?
+  hotelDetails        Json?
+  visaStatus          String?
+  totalCost           Float?
+  bookingStatus       String   @default("pending")
+  trackingUrl         String?
+  disruptions         Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
-  crew              CrewMaster    @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  crew                CrewMaster      @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  contract            CrewContract?   @relation(fields: [contractId], references: [id], onDelete: SetNull)
 
   @@index([crewId])
+  @@index([contractId])
   @@index([travelType])
-  @@index([status])
+  @@index([bookingStatus])
   @@index([departureDate])
   @@map("crew_travel")
 }
 
-model CrewPerformance {
-  id                String            @id @default(cuid())
-  crewId            String
-  contractId        String?
-  evaluatorId       String            // User ID of evaluator (Master, Chief Engineer, etc.)
-  evaluationDate    DateTime
-  technicalScore    Int               // 1-5 scale
-  softSkillsScore   Int               // 1-5 scale
-  safetyScore       Int               // 1-5 scale
-  overallRating     PerformanceRating
-  comments          String?
-  recommendations   String?           // Training, promotion, etc.
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+// Emergency Crew Replacement
+model EmergencyReplacement {
+  id                  String   @id @default(cuid())
+  vesselId            String
+  outgoingCrewId      String
+  outgoingRank        Rank
+  emergencyType       String   // medical, family, visa, behavioral, covid
+  severity            String   // immediate, high, medium, low
+  replacementCrewId   String?
+  replacementRank     Rank
+  requiredArrivalDate DateTime
+  actualArrivalDate   DateTime?
+  status              String   @default("active")
+  costPremium         Float?
+  vesselDelayHours    Float?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
-  crew              CrewMaster        @relation(fields: [crewId], references: [id], onDelete: Cascade)
-  contract          CrewContract?     @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  vessel              Vessel   @relation(fields: [vesselId], references: [id], onDelete: Cascade)
 
-  @@index([crewId])
-  @@index([contractId])
-  @@index([evaluationDate])
-  @@index([overallRating])
-  @@map("crew_performance")
-}
-
-model TrainingRecord {
-  id                String          @id @default(cuid())
-  crewId            String
-  courseName        String
-  courseCode        String?
-  trainingProvider  String?
-  trainingType      String?         // STCW, company, type-specific, simulator
-  startDate         DateTime
-  completionDate    DateTime?
-  certificateUrl    String?
-  certificateNumber String?
-  nextRenewalDate   DateTime?
-  status            TrainingStatus  @default(scheduled)
-  score             Float?
-  passGrade         Float?
-  notes             String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-
-  crew              CrewMaster      @relation(fields: [crewId], references: [id], onDelete: Cascade)
-
-  @@index([crewId])
-  @@index([courseName])
+  @@index([vesselId])
+  @@index([outgoingCrewId])
   @@index([status])
-  @@index([completionDate])
-  @@index([nextRenewalDate])
-  @@map("training_records")
-}
-
-model CrewPayroll {
-  id                String        @id @default(cuid())
-  crewId            String
-  contractId        String?
-  payPeriodStart    DateTime
-  payPeriodEnd      DateTime
-  baseWage          Float
-  overtimeHours     Float         @default(0)
-  overtimeRate      Float?
-  allowances        Float         @default(0)
-  grossWage          Float
-  deductions        Float         @default(0)
-  netWage            Float
-  currency           String        @default("USD")
-  exchangeRate       Float?        @default(1)
-  allotments         Float         @default(0)
-  finalSettlement    Boolean       @default(false)
-  leaveBalance       Float?        @default(0)
-  leaveEncashment    Float?        @default(0)
-  processedDate      DateTime?
-  notes              String?
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-
-  crew               CrewMaster    @relation(fields: [crewId], references: [id], onDelete: Cascade)
-
-  @@index([crewId])
-  @@index([contractId])
-  @@index([payPeriodStart])
-  @@index([payPeriodEnd])
-  @@index([processedDate])
-  @@map("crew_payroll")
+  @@index([severity])
+  @@map("emergency_replacements")
 }

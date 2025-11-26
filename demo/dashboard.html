@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crew Pay Intelligence System - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .mainframe-card h2 {
+            color: #e74c3c;
+        }
+        
+        .ai-card h2 {
+            color: #27ae60;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .metric-value {
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .comparison-card {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .winner-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            margin-top: 15px;
+        }
+        
+        .winner-mainframe {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .winner-ai {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .winner-tie {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .recommendation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Crew Pay Intelligence System</h1>
+            <p>Mainframe vs AI Agent Comparison Dashboard</p>
+        </header>
+        
+        <div id="loading" class="loading">
+            <p>Loading comparison data...</p>
+            <p style="font-size: 0.8em; margin-top: 10px;">Run a comparison via API to see results here</p>
+        </div>
+        
+        <div id="dashboard" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="speed-improvement">--</div>
+                    <div class="stat-label">Speed Improvement</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="accuracy-match">--</div>
+                    <div class="stat-label">Accuracy Match</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="differences">--</div>
+                    <div class="stat-label">Differences Found</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="winner">--</div>
+                    <div class="stat-label">Winner</div>
+                </div>
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="card mainframe-card">
+                    <h2>🔴 Mainframe System</h2>
+                    <div class="metric">
+                        <span class="metric-label">Processing Time</span>
+                        <span class="metric-value" id="mf-time">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Gross Pay</span>
+                        <span class="metric-value" id="mf-pay">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Credit Hours</span>
+                        <span class="metric-value" id="mf-hours">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Base Pay</span>
+                        <span class="metric-value" id="mf-base">--</span>
+                    </div>
+                </div>
+                
+                <div class="card ai-card">
+                    <h2>🟢 AI Agent System</h2>
+                    <div class="metric">
+                        <span class="metric-label">Processing Time</span>
+                        <span class="metric-value" id="ai-time">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Gross Pay</span>
+                        <span class="metric-value" id="ai-pay">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Credit Hours</span>
+                        <span class="metric-value" id="ai-hours">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Base Pay</span>
+                        <span class="metric-value" id="ai-base">--</span>
+                    </div>
+                </div>
+                
+                <div class="comparison-card">
+                    <h2>📊 Comparison Analysis</h2>
+                    <div id="winner-badge"></div>
+                    <div class="recommendation" id="recommendation">
+                        <strong>Recommendation:</strong> <span id="recommendation-text">--</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="loadComparison()">Refresh Data</button>
+        </div>
+    </div>
+    
+    <script>
+        // Load comparison data from demo results
+        function loadComparison() {
+            fetch('/demo/results/comparison_report.json')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.comparison) {
+                        displayComparison(data);
+                    }
+                })
+                .catch(err => {
+                    console.log('No comparison data found. Run the demo script first.');
+                });
+        }
+        
+        function displayComparison(data) {
+            const comparison = data.comparison;
+            const mf = data.mainframe;
+            const ai = data.ai_agent;
+            
+            // Stats
+            document.getElementById('speed-improvement').textContent = 
+                comparison.comparison?.speed_improvement_percent?.toFixed(1) + '%' || '--';
+            document.getElementById('accuracy-match').textContent = 
+                comparison.comparison?.accuracy_match ? '✓ Match' : '✗ Diff';
+            document.getElementById('differences').textContent = 
+                comparison.comparison?.total_differences || 0;
+            document.getElementById('winner').textContent = 
+                comparison.winner === 'ai_agent' ? 'AI Agent' : 
+                comparison.winner === 'mainframe' ? 'Mainframe' : 'Tie';
+            
+            // Mainframe
+            document.getElementById('mf-time').textContent = 
+                mf.processing_time_seconds?.toFixed(2) + 's' || '--';
+            document.getElementById('mf-pay').textContent = 
+                '$' + mf.gross_pay?.toLocaleString('en-US', {minimumFractionDigits: 2}) || '--';
+            document.getElementById('mf-hours').textContent = 
+                mf.credit_hours?.toFixed(2) || '--';
+            document.getElementById('mf-base').textContent = 
+                '$' + mf.base_pay?.toLocaleString('en-US', {minimumFractionDigits: 2}) || '--';
+            
+            // AI Agent
+            document.getElementById('ai-time').textContent = 
+                ai.processing_time_seconds?.toFixed(2) + 's' || '--';
+            document.getElementById('ai-pay').textContent = 
+                '$' + ai.gross_pay?.toLocaleString('en-US', {minimumFractionDigits: 2}) || '--';
+            document.getElementById('ai-hours').textContent = 
+                ai.credit_hours?.toFixed(2) || '--';
+            document.getElementById('ai-base').textContent = 
+                '$' + ai.base_pay?.toLocaleString('en-US', {minimumFractionDigits: 2}) || '--';
+            
+            // Winner badge
+            const winnerBadge = document.getElementById('winner-badge');
+            const winnerClass = comparison.winner === 'ai_agent' ? 'winner-ai' :
+                               comparison.winner === 'mainframe' ? 'winner-mainframe' : 'winner-tie';
+            winnerBadge.innerHTML = `<span class="winner-badge ${winnerClass}">Winner: ${comparison.winner.toUpperCase()}</span>`;
+            
+            // Recommendation
+            document.getElementById('recommendation-text').textContent = 
+                comparison.recommendation || 'No recommendation available';
+            
+            // Show dashboard
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+        }
+        
+        // Try to load on page load
+        loadComparison();
+    </script>
+</body>
+</html>
