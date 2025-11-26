@@ -1,0 +1,64 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
+
+export function FinalCTA() {
+  const router = useRouter();
+
+  return (
+    <section className="py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-3xl mx-auto text-center"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Ready to Simplify Your Maritime Life?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8">
+            Join 10,000+ seafarers who ditched the paperwork
+          </p>
+
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mb-8"
+          >
+            <Button
+              size="lg"
+              onClick={() => router.push("/dashboard")}
+              className="bg-white text-blue-900 hover:bg-blue-50 text-xl px-12 py-8 h-auto animate-glow"
+            >
+              Login to Dashboard
+            </Button>
+          </motion.div>
+
+          <p className="text-blue-200 mb-8">
+            Free for all crew members. No credit card required.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-6 text-blue-100">
+            <div className="flex items-center gap-2">
+              <Check className="w-5 h-5 text-green-400" />
+              <span>Used by 50+ companies</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-5 h-5 text-green-400" />
+              <span>24/7 Support</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-5 h-5 text-green-400" />
+              <span>Bank-level Security</span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
