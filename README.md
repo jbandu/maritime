@@ -152,6 +152,28 @@ This project is configured for deployment on Railway. Follow these steps:
 - **App won't start**: Check that `NEXTAUTH_SECRET` and `NEXTAUTH_URL` are set
 - **Database connection errors**: Verify `DATABASE_URL` format and SSL settings
 
+## Documentation
+
+Comprehensive documentation is available in the following files:
+
+- **[DOCUMENTATION.md](./DOCUMENTATION.md)** - Complete system documentation
+- **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - API reference guide
+- **[COMPONENTS.md](./COMPONENTS.md)** - React components documentation
+- **[DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)** - Database schema reference
+- **[DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)** - Developer guide
+- **[AGENT_SYSTEM.md](./AGENT_SYSTEM.md)** - AI agent system documentation
+- **[QUICK_START_AGENTS.md](./QUICK_START_AGENTS.md)** - Quick start guide for agents
+- **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)** - Implementation status
+- **[CREW_PAY_SYSTEM.md](./CREW_PAY_SYSTEM.md)** - Crew pay system documentation
+
+### Quick Links
+
+- **Getting Started**: See [DOCUMENTATION.md](./DOCUMENTATION.md#setup--installation)
+- **API Reference**: See [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
+- **Component Guide**: See [COMPONENTS.md](./COMPONENTS.md)
+- **Database Schema**: See [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
+- **Development Setup**: See [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)
+
 ## License
 
 Private - All rights reserved
