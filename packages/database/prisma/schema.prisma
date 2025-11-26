@@ -377,7 +377,8 @@ model CrewTravel {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  contract            CrewContract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  crew                CrewMaster      @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  contract            CrewContract?   @relation(fields: [contractId], references: [id], onDelete: SetNull)
 
   @@index([crewId])
   @@index([contractId])
