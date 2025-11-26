@@ -39,14 +39,27 @@ export function Hero() {
 
             {/* Subheadline */}
             <motion.p
-              className="text-xl sm:text-2xl text-blue-100 mb-12 max-w-2xl mx-auto"
+              className="text-xl sm:text-2xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Manage certificates, log work hours, view contracts - all in one
-              secure platform
+              Stop juggling papers, emails, and Excel sheets. Your certificates, contracts, and compliance - all in one secure place. Access from ship or shore, 24/7.
             </motion.p>
+
+            {/* Trust Line */}
+            <motion.div
+              className="text-sm text-blue-200 mb-12 flex flex-wrap items-center justify-center gap-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <span>Trusted by 10,000+ seafarers worldwide</span>
+              <span>•</span>
+              <span>100% MLC Compliant</span>
+              <span>•</span>
+              <span>Bank-level Security</span>
+            </motion.div>
 
             {/* Statistics */}
             <motion.div
@@ -85,9 +98,9 @@ export function Hero() {
               <Button
                 size="lg"
                 className="bg-white text-blue-900 hover:bg-blue-50 text-lg px-8 py-6 h-auto animate-glow"
-                onClick={() => router.push("/dashboard")}
+                onClick={() => router.push("/login")}
               >
-                Login to Dashboard
+                Login to Dashboard →
               </Button>
               <Button
                 size="lg"
@@ -96,7 +109,7 @@ export function Hero() {
                 onClick={() => setDemoOpen(true)}
               >
                 <Play className="mr-2 h-5 w-5" />
-                Watch Demo
+                Watch 30s Demo
               </Button>
             </motion.div>
           </div>

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Maritime Crew Portal - Manage Your Career",
+  title: "Maritime Crew Portal - Certificates, Contracts & Compliance",
   description:
-    "Track certificates, log work hours, view contracts. 100% MLC compliant. Free for all crew members.",
-  keywords: "maritime, crew, certificates, STCW, MLC, seafarer",
+    "Manage your maritime certificates, contracts, and work hours. 100% MLC compliant. Free for all crew members. Access from ship or shore.",
+  keywords: "maritime, crew, certificates, STCW, MLC, seafarer, work hours, compliance",
   openGraph: {
     title: "Maritime Crew Portal",
     description: "Your maritime career, simplified",

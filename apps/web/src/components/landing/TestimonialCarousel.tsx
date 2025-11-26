@@ -8,64 +8,82 @@ import { Button } from "@/components/ui/button";
 
 const testimonials = [
   {
-    name: "John Smith",
-    rank: "Chief Engineer",
-    vessel: "MV Atlantic Star",
-    years: 15,
-    flag: "Liberia",
-    quote:
-      "This platform saved me from missing my STCW renewal. The alerts are perfect and the mobile upload makes everything so easy.",
+    name: "Captain James Rodriguez",
+    rank: "Chief Officer",
+    vessel: "MV Pacific Voyager",
+    vesselType: "Container Vessel",
+    photo: "https://ui-avatars.com/api/?name=James+Rodriguez&size=160&background=1e3a8a&color=fff&bold=true",
     rating: 5,
+    quote:
+      "Before this system, I was tracking 12 certificates on Excel. Now it's automatic. I got an alert 60 days before my GMDSS expired - it literally saved my contract!",
+    highlight: "Saved my contract",
+    flag: "🇵🇭",
+    years: 15,
   },
   {
-    name: "Maria Garcia",
-    rank: "Second Officer",
-    vessel: "MV Pacific Wave",
-    years: 8,
-    flag: "Panama",
-    quote:
-      "Logging work hours used to take forever. Now it's literally 2 minutes. The MLC compliance checks give me peace of mind.",
+    name: "Maria Santos",
+    rank: "2nd Engineer",
+    vessel: "MT Ocean Pride",
+    vesselType: "Oil Tanker",
+    photo: "https://ui-avatars.com/api/?name=Maria+Santos&size=160&background=0891b2&color=fff&bold=true",
     rating: 5,
+    quote:
+      "Work hours used to take 15 minutes every day writing everything. Now it's 2 minutes on my phone. Master approves instantly. No more paper logs cluttering my cabin!",
+    highlight: "From 15 min to 2 min",
+    flag: "🇵🇭",
+    years: 8,
   },
   {
     name: "Ahmed Hassan",
-    rank: "Master",
-    vessel: "MV Indian Ocean",
-    years: 20,
-    flag: "Marshall Islands",
-    quote:
-      "As a Master, I love how easy it is to approve crew work hours digitally. No more paperwork headaches.",
-    rating: 5,
-  },
-  {
-    name: "Li Wei",
-    rank: "Chief Cook",
-    vessel: "MV Asia Express",
-    years: 12,
-    flag: "Singapore",
-    quote:
-      "Finally, a platform that understands seafarers. Everything I need is in one place. Highly recommend!",
-    rating: 5,
-  },
-  {
-    name: "James Wilson",
     rank: "Able Seaman",
-    vessel: "MV Caribbean Dream",
-    years: 6,
-    flag: "Bahamas",
-    quote:
-      "The certificate tracking is a lifesaver. I never have to worry about expiry dates anymore.",
+    vessel: "MV Iron Carrier",
+    vesselType: "Bulk Carrier",
+    photo: "https://ui-avatars.com/api/?name=Ahmed+Hassan&size=160&background=0d9488&color=fff&bold=true",
     rating: 5,
+    quote:
+      "I can see my contract end date, my next sign-on port, even my flight details. Before I had to email the office 5 times and wait days for replies. This is a total game-changer.",
+    highlight: "No more waiting for replies",
+    flag: "🇪🇬",
+    years: 12,
   },
   {
-    name: "Sofia Petrov",
-    rank: "Third Engineer",
-    vessel: "MV Baltic Sea",
-    years: 4,
-    flag: "Malta",
-    quote:
-      "Clean interface, fast loading, and everything works perfectly. This is how maritime software should be.",
+    name: "Sven Andersson",
+    rank: "Chief Engineer",
+    vessel: "MV Nordic Star",
+    vesselType: "RoRo Vessel",
+    photo: "https://ui-avatars.com/api/?name=Sven+Andersson&size=160&background=f59e0b&color=fff&bold=true",
     rating: 5,
+    quote:
+      "The MLC compliance checking is brilliant. It automatically flags if we're close to violations. As Chief, I can monitor the whole engine room team's hours and catch issues early.",
+    highlight: "Catch violations early",
+    flag: "🇸🇪",
+    years: 20,
+  },
+  {
+    name: "Raj Kumar",
+    rank: "2nd Officer",
+    vessel: "MV Eastern Express",
+    vesselType: "Container Vessel",
+    photo: "https://ui-avatars.com/api/?name=Raj+Kumar&size=160&background=10b981&color=fff&bold=true",
+    rating: 5,
+    quote:
+      "I renewed my ECDIS certificate last month. Got the reminder, uploaded the new cert from my phone in Singapore port, and it was approved by noon. So smooth!",
+    highlight: "Renewed in port, approved by noon",
+    flag: "🇮🇳",
+    years: 6,
+  },
+  {
+    name: "Carlos Mendoza",
+    rank: "Bosun",
+    vessel: "MV South Pacific",
+    vesselType: "Bulk Carrier",
+    photo: "https://ui-avatars.com/api/?name=Carlos+Mendoza&size=160&background=6366f1&color=fff&bold=true",
+    rating: 5,
+    quote:
+      "Even as a rating, I love this. I can check my leave balance anytime. Know exactly when I'm signing off. My family knows my schedule now. Makes everything easier.",
+    highlight: "Family knows my schedule",
+    flag: "🇵🇭",
+    years: 10,
   },
 ];
 
@@ -94,9 +112,9 @@ export function TestimonialCarousel() {
   return (
     <section className="py-24 bg-slate-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div id="benefits" className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Trusted by Seafarers Worldwide
+            Seafarers Love It (And So Will You)
           </h2>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto">
             See what your fellow crew members are saying
@@ -118,7 +136,18 @@ export function TestimonialCarousel() {
                 transition={{ duration: 0.5 }}
               >
                 <div className="max-w-3xl mx-auto">
-                  <TestimonialCard {...testimonials[currentIndex]} />
+                  <TestimonialCard
+                    name={testimonials[currentIndex].name}
+                    rank={testimonials[currentIndex].rank}
+                    vessel={testimonials[currentIndex].vessel}
+                    vesselType={testimonials[currentIndex].vesselType}
+                    years={testimonials[currentIndex].years}
+                    flag={testimonials[currentIndex].flag}
+                    quote={testimonials[currentIndex].quote}
+                    rating={testimonials[currentIndex].rating}
+                    photo={testimonials[currentIndex].photo}
+                    highlight={testimonials[currentIndex].highlight}
+                  />
                 </div>
               </motion.div>
             </AnimatePresence>

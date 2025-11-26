@@ -21,8 +21,11 @@ export function FinalCTA() {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Simplify Your Maritime Life?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join 10,000+ seafarers who ditched the paperwork
+          <p className="text-xl text-blue-100 mb-4">
+            Join 10,000+ seafarers who've ditched the paperwork.
+          </p>
+          <p className="text-lg text-blue-200 mb-8">
+            Your certificates, contracts, and compliance - all in one place. Access from anywhere. Free for all crew members.
           </p>
 
           <motion.div
@@ -32,15 +35,15 @@ export function FinalCTA() {
           >
             <Button
               size="lg"
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/login")}
               className="bg-white text-blue-900 hover:bg-blue-50 text-xl px-12 py-8 h-auto animate-glow"
             >
-              Login to Dashboard
+              Login to Your Dashboard →
             </Button>
           </motion.div>
 
           <p className="text-blue-200 mb-8">
-            Free for all crew members. No credit card required.
+            All crew members get free access. No credit card required.
           </p>
 
           <div className="flex flex-wrap justify-center gap-6 text-blue-100">
