@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, AlertTriangle, Users } from "lucide-react";
@@ -38,11 +38,7 @@ export function RotationPlanning() {
   const [loading, setLoading] = useState(true);
   const [daysAhead, setDaysAhead] = useState(90);
 
-  useEffect(() => {
-    fetchRotationData();
-  }, [daysAhead]);
-
-  const fetchRotationData = async () => {
+  const fetchRotationData = useCallback(async () => {
     try {
       const response = await fetch(`/api/crew/rotation?daysAhead=${daysAhead}`);
       const result = await response.json();
@@ -54,7 +50,11 @@ export function RotationPlanning() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [daysAhead]);
+
+  useEffect(() => {
+    fetchRotationData();
+  }, [fetchRotationData]);
 
   if (loading) {
     return <div>Loading rotation planning data...</div>;

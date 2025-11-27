@@ -32,7 +32,7 @@ export function FinalCTA() {
             Ready to Simplify Your Maritime Life?
           </h2>
           <p className="text-xl text-blue-100 mb-4">
-            Join 10,000+ seafarers who've ditched the paperwork.
+            Join 10,000+ seafarers who&apos;ve ditched the paperwork.
           </p>
           <p className="text-lg text-blue-200 mb-8">
             Your certificates, contracts, and compliance - all in one place. Access from anywhere. Free for all crew members.

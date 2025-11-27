@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -45,7 +45,7 @@ export function AIAgentDemoModal({
     setMessages((prev) => [...prev, ""]);
   };
 
-  const runDemo = async (agent: string) => {
+  const runDemo = useCallback(async (agent: string) => {
     setIsThinking(true);
     setMessages([]);
     setResults(null);
@@ -55,7 +55,7 @@ export function AIAgentDemoModal({
       await new Promise((resolve) => setTimeout(resolve, 500));
       await streamMessage("📊 Analyzing crew pool (400+ candidates)...");
       await new Promise((resolve) => setTimeout(resolve, 800));
-      
+
       // Try to call real API (will fail if not logged in, which is fine for demo)
       let candidates = [
         { id: 1, name: "John Smith", score: 95, rank: "Chief Engineer" },
@@ -133,13 +133,13 @@ export function AIAgentDemoModal({
     }
 
     setIsThinking(false);
-  };
+  }, [streamMessage]);
 
   useEffect(() => {
     if (open && defaultAgent) {
       setTimeout(() => runDemo(defaultAgent), 300);
     }
-  }, [open, defaultAgent]);
+  }, [open, defaultAgent, runDemo]);
 
   const clearTerminal = () => {
     setMessages([]);

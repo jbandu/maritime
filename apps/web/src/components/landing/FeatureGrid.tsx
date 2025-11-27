@@ -9,7 +9,7 @@ export function FeatureGrid() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div id="features" className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Everything You Need, Nothing You Don't
+            Everything You Need, Nothing You Don&apos;t
           </h2>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto">
             Powerful features designed specifically for maritime professionals

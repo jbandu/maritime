@@ -153,7 +153,7 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
           </Button>
 
           <p className="text-xs text-center text-slate-400">
-            Don't have an account? Contact your company administrator.
+            Don&apos;t have an account? Contact your company administrator.
           </p>
         </form>
       </DialogContent>

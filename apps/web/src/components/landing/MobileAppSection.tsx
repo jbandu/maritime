@@ -160,7 +160,7 @@ export function MobileAppSection() {
                 <div className="text-2xl">💬</div>
                 <div>
                   <p className="text-white italic mb-2">
-                    "I uploaded my renewed STCW cert from Singapore port using my phone. Took 2 minutes. Approved by the time I finished lunch."
+                    &ldquo;I uploaded my renewed STCW cert from Singapore port using my phone. Took 2 minutes. Approved by the time I finished lunch.&rdquo;
                   </p>
                   <div className="text-sm text-blue-200">
                     - Maria, 2nd Engineer
